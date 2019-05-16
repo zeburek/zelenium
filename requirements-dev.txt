@@ -1,0 +1,7 @@
+selenium
+tox
+pre-commit
+black
+flake8
+flake8-import-order
+pytest
