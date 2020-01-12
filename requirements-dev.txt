@@ -5,3 +5,6 @@ black
 flake8
 flake8-import-order
 pytest
+pytest-cov
+pytest-localserver
+webdriver-manager

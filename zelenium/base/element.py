@@ -1,21 +1,31 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.support import expected_conditions as EC
+from zelenium.base.page import BasePage
+from zelenium.exceptions import BaseElementWrongUsageException
 
 
-class BaseDriver:
-    dec = default_expected_condition = None
-    dwt = default_wait_tim = 0
+class BaseElement:
+    page = None
 
-    def __init__(
-        self,
-        driver: WebDriver,
-        default_expected_condition=EC.presence_of_element_located,
-        default_wait_time=5,
-    ):
-        self.d = self.driver = driver
-        self.dec = default_expected_condition
-        self.dwt = default_wait_time
+    def __init__(self, by, value):
+        self.by = by
+        self.value = value
+        self.selector = (self.by, self.value)
 
-    def find_element(self, by: By, selector, wait_time=dwt):
-        pass
+    def __get__(self, instance, owner):
+        if not issubclass(owner, BasePage):
+            raise BaseElementWrongUsageException(
+                "BaseElement should be used only as "
+                "a parameter of BasePage child class"
+            )
+        self.page = instance
+        return self
+
+    def __call__(self):
+        return self._find(self.selector)
+
+    def _find(self, selector, parent=None):
+        return self.page.wait(parent).until(self.page.dec(selector))
+
+    def child(self, value):
+        if isinstance(value, BaseElement):
+            value = value.selector
+        return self._find(value, self())

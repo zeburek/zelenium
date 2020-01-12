@@ -1,0 +1,2 @@
+class BaseElementWrongUsageException(Exception):
+    pass
