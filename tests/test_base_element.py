@@ -18,39 +18,92 @@ def test_access_default_attributes():
     assert page.elem.selector == ("test", "value")
 
 
-@pytest.mark.parametrize("by,value,tag_name", [
-    (By.TAG_NAME, "body", "body"),
-    (By.CLASS_NAME, "parent", "div"),
-    (By.ID, "parent-div", "div"),
-    (By.CSS_SELECTOR, ".parent", "div"),
-    (By.LINK_TEXT, "Link with text", "a"),
-    (By.XPATH, "//div[@class='parent']", "div"),
-])
+@pytest.mark.parametrize(
+    "by,value,tag_name",
+    [
+        (By.TAG_NAME, "body", "body"),
+        (By.CLASS_NAME, "parent", "div"),
+        (By.ID, "parent-div", "div"),
+        (By.CSS_SELECTOR, ".parent", "div"),
+        (By.LINK_TEXT, "Link with text", "a"),
+        (By.XPATH, "//div[@class='parent']", "div"),
+    ],
+)
 def test_base_element_by(driver, serve, by, value, tag_name):
     class Page(BasePage):
         elem = BaseElement(by, value)
+
     page = Page(driver)
     elem = page.elem()
     assert elem
     assert elem.tag_name == tag_name
 
 
-@pytest.mark.parametrize("by,value,tag_name", [
-    (By.TAG_NAME, "div", "div"),
-    (By.CLASS_NAME, "parent", "div"),
-    (By.ID, "parent-div", "div"),
-    (By.CSS_SELECTOR, ".parent", "div"),
-    (By.LINK_TEXT, "Link with text", "a"),
-    (By.XPATH, ".//div[@class='parent']", "div"),
-])
+@pytest.mark.parametrize(
+    "by,value,tag_name",
+    [
+        (By.TAG_NAME, "body", "body"),
+        (By.CLASS_NAME, "parent", "div"),
+        (By.ID, "parent-div", "div"),
+        (By.CSS_SELECTOR, ".parent", "div"),
+        (By.LINK_TEXT, "Link with text", "a"),
+        (By.XPATH, "//div[@class='parent']", "div"),
+    ],
+)
+def test_base_all_elements_by(driver, serve, by, value, tag_name):
+    class Page(BasePage):
+        elem = BaseElement(by, value)
+
+    page = Page(driver)
+    elem = page.elem.all()
+    assert len(elem) == 1
+    assert elem[0]
+    assert elem[0].tag_name == tag_name
+
+
+@pytest.mark.parametrize(
+    "by,value,tag_name",
+    [
+        (By.TAG_NAME, "div", "div"),
+        (By.CLASS_NAME, "parent", "div"),
+        (By.ID, "parent-div", "div"),
+        (By.CSS_SELECTOR, ".parent", "div"),
+        (By.LINK_TEXT, "Link with text", "a"),
+        (By.XPATH, ".//div[@class='parent']", "div"),
+    ],
+)
 def test_base_child_element_by(driver, serve, by, value, tag_name):
     class Page(BasePage):
         body = BaseElement(By.TAG_NAME, "body")
         elem = BaseElement(by, value)
+
     page = Page(driver)
     elem = page.body.child(page.elem)
     assert elem
     assert elem.tag_name == tag_name
+
+
+@pytest.mark.parametrize(
+    "by,value,tag_name",
+    [
+        (By.TAG_NAME, "div", "div"),
+        (By.CLASS_NAME, "parent", "div"),
+        (By.ID, "parent-div", "div"),
+        (By.CSS_SELECTOR, ".parent", "div"),
+        (By.LINK_TEXT, "Link with text", "a"),
+        (By.XPATH, ".//div[@class='parent']", "div"),
+    ],
+)
+def test_base_all_child_elements_by(driver, serve, by, value, tag_name):
+    class Page(BasePage):
+        body = BaseElement(By.TAG_NAME, "body")
+        elem = BaseElement(by, value)
+
+    page = Page(driver)
+    elem = page.body.child_all(page.elem)
+    assert len(elem) == 1
+    assert elem[0]
+    assert elem[0].tag_name == tag_name
 
 
 def test_default_expected_condition(driver, serve):
@@ -65,6 +118,7 @@ def test_default_expected_condition(driver, serve):
 def test_base_element_wrong_usage_exception():
     class Page:
         elem = BaseElement("test", "val")
+
     with pytest.raises(BaseElementWrongUsageException):
         page = Page()
         page.elem()

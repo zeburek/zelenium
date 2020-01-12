@@ -1,3 +1,4 @@
+from zelenium import expected_conditions as EC
 from zelenium.base.page import BasePage
 from zelenium.exceptions import BaseElementWrongUsageException
 
@@ -25,7 +26,20 @@ class BaseElement:
     def _find(self, selector, parent=None):
         return self.page.wait(parent).until(self.page.dec(selector))
 
+    def _find_all(self, selector, parent=None):
+        return self.page.wait(parent).until(
+            EC.presence_of_all_elements_located(selector)
+        )
+
     def child(self, value):
         if isinstance(value, BaseElement):
             value = value.selector
         return self._find(value, self())
+
+    def all(self):
+        return self._find_all(self.selector)
+
+    def child_all(self, value):
+        if isinstance(value, BaseElement):
+            value = value.selector
+        return self._find_all(value, self())

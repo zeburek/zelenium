@@ -27,3 +27,11 @@ class BaseElement:
 
     def child(self, value: Union[BaseElement, Tuple[str, str]]) -> WebElement:
         ...
+
+    def all(self) -> [WebElement]:
+        ...
+
+    def child_all(
+        self, value: Union[BaseElement, Tuple[str, str]]
+    ) -> [WebElement]:
+        ...

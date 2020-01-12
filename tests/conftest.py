@@ -21,7 +21,7 @@ def driver():
     else:
         driver = webdriver.Chrome(
             executable_path=ChromeDriverManager().install(),
-            chrome_options=chrome_options
+            chrome_options=chrome_options,
         )
     yield driver
     driver.quit()

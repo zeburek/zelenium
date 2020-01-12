@@ -23,8 +23,8 @@ class BasePage:
     def wait(self, parent=None):
         return WebDriverWait(parent or self.d, self.dwt, self.dpf)
 
-    def until(self, method, message='', **kwargs):
+    def until(self, method, message="", **kwargs):
         return self.wait(**kwargs).until(method, message)
 
-    def until_not(self, method, message='', **kwargs):
+    def until_not(self, method, message="", **kwargs):
         return self.wait(**kwargs).until_not(method, message)

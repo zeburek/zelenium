@@ -50,6 +50,7 @@ def test_default_poll_frequency(driver, serve):
             nonlocal inc
             inc += 1
             return False
+
         return action
 
     page = Page(driver, ec, 1, 0.2)
@@ -76,5 +77,7 @@ def test_wait_until_not(driver, serve):
     page = Page(driver, EC.visibility_of_element_located, 1, 0.5)
     body = page.until(page.dec((By.TAG_NAME, "body")))
     assert body.tag_name == "body"
-    no_elem = page.until_not(page.dec((By.CSS_SELECTOR, ".no-link")), parent=body)
+    no_elem = page.until_not(
+        page.dec((By.CSS_SELECTOR, ".no-link")), parent=body
+    )
     assert not no_elem
