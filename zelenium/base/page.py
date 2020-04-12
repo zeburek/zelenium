@@ -1,30 +1,31 @@
-from selenium.webdriver.support.wait import WebDriverWait
+from typing import Callable
 
-from zelenium import expected_conditions as EC
+from zelenium.base import Base
+from zelenium.base import BaseElement
 
 
-class BasePage:
-    dec = default_expected_condition = None
-    dwt = default_wait_time = 5
-    dpf = default_poll_frequency = 0.3
+class MetaPage(type):
+    def __new__(cls, name, bases, attrs):
+        new_attrs = {}
+        suffix = attrs.get("_{}__suffix".format(name), "")
+        for base in bases:
+            for name, val in base.__dict__.items():
+                if isinstance(val, BaseElement):
+                    attrs[name] = (val.by, val.value)
+        for name, value in attrs.items():
+            if isinstance(value, tuple) and len(value) == 2:
+                by, selector = value
+                value = BaseElement(by, selector)
+                value.set_suffix(suffix)
+            new_attrs[name] = value
+        return super().__new__(cls, name, bases, new_attrs)
 
-    def __init__(
-        self,
-        driver,
-        default_expected_condition=EC.presence_of_element_located,
-        default_wait_time=dwt,
-        default_poll_frequency=dpf,
-    ):
-        self.d = self.driver = driver
-        self.dec = self.default_expected_condition = default_expected_condition
-        self.dwt = self.default_wait_time = default_wait_time
-        self.dpf = self.default_poll_frequency = default_poll_frequency
 
-    def wait(self, parent=None):
-        return WebDriverWait(parent or self.d, self.dwt, self.dpf)
+class BasePage(Base, metaclass=MetaPage):
+    __suffix = ""
 
-    def until(self, method, message="", **kwargs):
+    def until(self, method: Callable, message: str = "", **kwargs):
         return self.wait(**kwargs).until(method, message)
 
-    def until_not(self, method, message="", **kwargs):
+    def until_not(self, method: Callable, message: str = "", **kwargs):
         return self.wait(**kwargs).until_not(method, message)

@@ -3,19 +3,44 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
 from zelenium import expected_conditions as EC
-from zelenium.base.element import BaseElement
+from zelenium.base import BaseElement
 from zelenium.base.page import BasePage
-from zelenium.exceptions import BaseElementWrongUsageException
 
 
 def test_access_default_attributes():
-    class Page(BasePage):
-        elem = BaseElement("test", "value")
+    elem = BaseElement("test", "value")
 
-    page = Page(None)
-    assert page.elem.by == "test"
-    assert page.elem.value == "value"
-    assert page.elem.selector == ("test", "value")
+    assert elem.by == "test"
+    assert elem.value == "value"
+    assert elem.selector == ("test", "value")
+    assert repr(elem) == "Element value (test)"
+
+
+format_params = (
+    "suffix, selector, args, valid",
+    [
+        ("", "selector_{}", (1,), "selector_1"),
+        ("1", "{s}_selector", (), "1_selector"),
+        ("1", "{s}_selector_{}", (1,), "1_selector_1"),
+        ("1", "{s}_selector_{}_{}", (1, 2), "1_selector_1_2"),
+    ],
+)
+
+
+@pytest.mark.parametrize(*format_params)
+def test_format_element_after_suffix(suffix, selector, args, valid):
+    elem = BaseElement("test", selector)
+    elem.set_suffix(suffix)
+    elem = elem.format(*args)
+    assert elem.selector == ("test", valid)
+
+
+@pytest.mark.parametrize(*format_params)
+def test_format_element_before_suffix(suffix, selector, args, valid):
+    elem = BaseElement("test", selector)
+    elem = elem.format(*args)
+    elem.set_suffix(suffix)
+    assert elem.selector == ("test", valid)
 
 
 @pytest.mark.parametrize(
@@ -31,9 +56,9 @@ def test_access_default_attributes():
 )
 def test_base_element_by(driver, serve, by, value, tag_name):
     class Page(BasePage):
-        elem = BaseElement(by, value)
+        elem = (by, value)
 
-    page = Page(driver)
+    page = Page()
     elem = page.elem()
     assert elem
     assert elem.tag_name == tag_name
@@ -52,7 +77,7 @@ def test_base_element_by(driver, serve, by, value, tag_name):
 )
 def test_base_all_elements_by(driver, serve, by, value, tag_name):
     class Page(BasePage):
-        elem = BaseElement(by, value)
+        elem = (by, value)
 
     page = Page(driver)
     elem = page.elem.all()
@@ -74,8 +99,8 @@ def test_base_all_elements_by(driver, serve, by, value, tag_name):
 )
 def test_base_child_element_by(driver, serve, by, value, tag_name):
     class Page(BasePage):
-        body = BaseElement(By.TAG_NAME, "body")
-        elem = BaseElement(by, value)
+        body = (By.TAG_NAME, "body")
+        elem = (by, value)
 
     page = Page(driver)
     elem = page.body.child(page.elem)
@@ -96,8 +121,8 @@ def test_base_child_element_by(driver, serve, by, value, tag_name):
 )
 def test_base_all_child_elements_by(driver, serve, by, value, tag_name):
     class Page(BasePage):
-        body = BaseElement(By.TAG_NAME, "body")
-        elem = BaseElement(by, value)
+        body = (By.TAG_NAME, "body")
+        elem = (by, value)
 
     page = Page(driver)
     elem = page.body.child_all(page.elem)
@@ -108,17 +133,9 @@ def test_base_all_child_elements_by(driver, serve, by, value, tag_name):
 
 def test_default_expected_condition(driver, serve):
     class Page(BasePage):
-        link = BaseElement(By.CSS_SELECTOR, ".no-link")
+        link = (By.CSS_SELECTOR, ".no-link")
 
-    page = Page(driver, EC.visibility_of_element_located, 1, 0.5)
+    page = Page()
+    page.conf.default_expected_condition = EC.visibility_of_element_located
     with pytest.raises(TimeoutException):
         page.link()
-
-
-def test_base_element_wrong_usage_exception():
-    class Page:
-        elem = BaseElement("test", "val")
-
-    with pytest.raises(BaseElementWrongUsageException):
-        page = Page()
-        page.elem()

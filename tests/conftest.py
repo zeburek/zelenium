@@ -4,6 +4,8 @@ import pytest
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 
+from zelenium.base import Config
+
 
 @pytest.fixture(scope="session")
 def driver():
@@ -25,6 +27,12 @@ def driver():
         )
     yield driver
     driver.quit()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def config(driver):
+    conf = Config.get_instance()
+    conf.driver = driver
 
 
 @pytest.fixture
