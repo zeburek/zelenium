@@ -3,6 +3,7 @@ from typing import Callable
 
 import attr
 from selenium.webdriver.remote.webdriver import WebDriver
+
 from zelenium import expected_conditions as EC
 from zelenium.utils.singleton import singleton
 
@@ -39,4 +40,6 @@ class _Config:
         return Config()
 
 
-Config = singleton(_Config)
+@singleton
+class Config(_Config):
+    pass

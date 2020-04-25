@@ -1,5 +1,3 @@
-from typing import Callable
-
 from zelenium.base import Base
 from zelenium.base import BaseElement
 
@@ -23,9 +21,3 @@ class MetaPage(type):
 
 class BasePage(Base, metaclass=MetaPage):
     __suffix = ""
-
-    def until(self, method: Callable, message: str = "", **kwargs):
-        return self.wait(**kwargs).until(method, message)
-
-    def until_not(self, method: Callable, message: str = "", **kwargs):
-        return self.wait(**kwargs).until_not(method, message)
