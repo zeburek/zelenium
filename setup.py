@@ -3,10 +3,12 @@ import os
 import re
 from distutils.core import setup
 
+import setuptools  # noqa
+
 here = os.path.abspath(os.path.dirname(__file__))
 
 
-def read(file_paths, default=""):
+def read(*file_paths, default=""):
     # intentionally *not* adding an encoding option to open
     try:
         return codecs.open(os.path.join(here, *file_paths), "r").read()
@@ -14,8 +16,8 @@ def read(file_paths, default=""):
         return default
 
 
-def find_version(file_paths):
-    version_file = read(file_paths)
+def find_version(*file_paths):
+    version_file = read(*file_paths)
     version_match = re.search(
         r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M
     )
@@ -26,7 +28,7 @@ def find_version(file_paths):
 
 setup(
     name="zelenium",
-    version=find_version(["zelenium", "__init__.py"]),
+    version=find_version("zelenium", "__init__.py"),
     packages=["zelenium"],
     url="https://github.com/zeburek/zelenium",
     license="GNU General Public License v3 (GPLv3)",
@@ -35,6 +37,8 @@ setup(
     description=(
         "New Selenium framework for Python with base pages and elements"
     ),
+    long_description=read("README.md"),
+    long_description_content_type="text/markdown",
     classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 2",

@@ -1,1 +1,5 @@
-__version__ = "0.0.1"
+# flake8: noqa
+from .base.config import Config
+from .base.page import BasePage
+
+__version__ = "1.0.0"
