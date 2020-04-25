@@ -1,4 +1,5 @@
 from string import Formatter
+from typing import Callable
 from typing import Tuple
 from typing import Union
 
@@ -39,6 +40,12 @@ class Base:
             parent or self.conf.d, self.conf.dwt, self.conf.dpf
         )
 
+    def until(self, method: Callable, message: str = "", **kwargs):
+        return self.wait(**kwargs).until(method, message)
+
+    def until_not(self, method: Callable, message: str = "", **kwargs):
+        return self.wait(**kwargs).until_not(method, message)
+
     def find(
         self,
         selector: Union[Tuple[str, str], "BaseElement"],
@@ -46,7 +53,7 @@ class Base:
     ):
         if isinstance(selector, BaseElement):
             selector = selector.selector
-        return self.wait(parent).until(self.conf.dec(selector))
+        return self.until(self.conf.dec(selector), parent=parent)
 
     def find_all(
         self,
@@ -55,8 +62,8 @@ class Base:
     ):
         if isinstance(selector, BaseElement):
             selector = selector.selector
-        return self.wait(parent).until(
-            EC.presence_of_all_elements_located(selector)
+        return self.until(
+            EC.presence_of_all_elements_located(selector), parent=parent
         )
 
 
