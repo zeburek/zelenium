@@ -40,4 +40,6 @@ class _Config:
         return Config()
 
 
-Config = singleton(_Config)
+@singleton
+class Config(_Config):
+    pass
