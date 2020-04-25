@@ -1,5 +1,5 @@
 # flake8: noqa
-from .base.config import Config
-from .base.page import BasePage
+from zelenium.base.config import Config
+from zelenium.base.page import BasePage
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
