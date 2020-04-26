@@ -29,7 +29,7 @@ def find_version(*file_paths):
 setup(
     name="zelenium",
     version=find_version("zelenium", "__init__.py"),
-    packages=["zelenium"],
+    packages=["zelenium", "zelenium.base", "zelenium.utils"],
     url="https://github.com/zeburek/zelenium",
     license="GNU General Public License v3 (GPLv3)",
     author="Parviz Khavari",
