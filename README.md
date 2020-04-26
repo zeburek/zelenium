@@ -85,8 +85,8 @@ fields and if field is tuple with two strings - it would replace it with
 `BaseElement` itself has magic `__call__` method,  which executes when
 you 'call' class instance:
 ```python
-from zelenium.base import BaseElement
-elem = BaseElement("by", "selector")
+from zelenium import BE
+elem = BE("by", "selector")
 web_element = elem()  # Here you calls class instance and it will return
                       # WebElement for you. Just classic WebElement
 ```
@@ -132,10 +132,10 @@ Zelenium offers two way to solve this. First is BaseElement formatting:
 
 ```python
 from selenium.webdriver.common.by import By
-from zelenium import BasePage
+from zelenium import BasePage, BE
 
 class DevicesPage(BasePage):
-    _cell = (By.CSS_SELECTOR, "[data-test='devicesPageCell_{}']")
+    _cell = BE(By.CSS_SELECTOR, "[data-test='devicesPageCell_{}']")
     user = _cell.format("user")
     imei = _cell.format("imei")
     iccid = _cell.format("iccid")
@@ -143,8 +143,7 @@ class DevicesPage(BasePage):
 ```
 
 `.format()` method formats locator as a string and returns new instance
-of BaseElement. It also handles during class loading, so you do not need
-to do anything.
+of BaseElement.
 
 Second mechanism is suffix:
 
@@ -166,6 +165,7 @@ Main differences of this two mechanisms are:
 * Suffix could be inherited;
 * Format could be used anywhere outside classes - you could format
 element in some functions according to changes on page.
+* Format requires usage of BaseElement class itself
 
 Example of suffix inheritance:
 
